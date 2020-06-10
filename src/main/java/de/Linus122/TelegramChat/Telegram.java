@@ -82,7 +82,7 @@ public class Telegram {
 
 					if (update.getMessage() != null && update.getMessage().getFrom() != null
 							&& !update.getMessage().getFrom().isIs_bot()) {
-								
+
 						Chat chat = update.getMessage().getChat();
 						if (!Main.getBackend().ids.contains(chat.getId()))
 							Main.getBackend().ids.add(chat.getId());
@@ -112,7 +112,6 @@ public class Telegram {
 									actionListener.onSendToMinecraft(chatMsg);
 								}
 								if (!chatMsg.isCancelled()) {
-									// Main.sendToMC(chatMsg);
 									Main.sendToMC(update.getMessage().getFrom().getFirst_name().toString(),
 											chatMsg.getContent(), chatMsg.getChatID_sender());
 								}
