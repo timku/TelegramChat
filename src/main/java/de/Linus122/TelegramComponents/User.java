@@ -5,6 +5,7 @@ public class User {
 	private boolean is_bot;
 	private String first_name;
 	private String last_name;
+	private String username;
 
 	public int getId() {
 		return id;
@@ -45,7 +46,4 @@ public class User {
 	public void setUsername(String username) {
 		this.username = username;
 	}
-
-	private String username;
-
 }
