@@ -115,15 +115,18 @@ public class Main extends JavaPlugin implements Listener {
 
 	private static void sendToMC(UUID uuid, String msg, int sender) {
 		OfflinePlayer op = Bukkit.getOfflinePlayer(uuid);
+		sendToMC(op.getName(), msg, sender);
+	}
+
+	public static void sendToMC(String name, String msg, int sender) {
 		List<Integer> recievers = new ArrayList<Integer>();
 		recievers.addAll(Main.data.ids);
 		recievers.remove((Object) sender);
-		String msgF = Utils.formatMSG("general-message-to-mc", op.getName(), msg)[0];
+		String msgF = Utils.formatMSG("general-message-to-mc", name, msg)[0];
 		for (int id : recievers) {
 			telegramHook.sendMsg(id, msgF);
 		}
 		Bukkit.broadcastMessage(msgF.replace("&", "§"));
-
 	}
 
 	public static void link(UUID player, int chatID) {

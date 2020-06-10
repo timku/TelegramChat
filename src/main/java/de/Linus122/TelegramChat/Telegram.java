@@ -80,7 +80,6 @@ public class Telegram {
 
 					if (update.getMessage() != null) {
 						Chat chat = update.getMessage().getChat();
-						if (chat.isPrivate()) {
 							if (!Main.getBackend().ids.contains(chat.getId()))
 								Main.getBackend().ids.add(chat.getId());
 
@@ -109,18 +108,14 @@ public class Telegram {
 										actionListener.onSendToMinecraft(chatMsg);
 									}
 									if(!chatMsg.isCancelled()){
-										Main.sendToMC(chatMsg);
+										//Main.sendToMC(chatMsg);
+										Main.sendToMC(update.getMessage().getFrom().getFirst_name().toString(), chatMsg.getContent(), chatMsg.getChatID_sender());
 									}
 								} else {
 									this.sendMsg(chat.getId(), Utils.formatMSG("need-to-link")[0]);
 								}
 							}
 
-						} else if (!chat.isPrivate()) {
-							int id = chat.getId();
-							if (!Main.getBackend().ids.contains(id))
-								Main.getBackend().ids.add(id);
-						}
 					}
 
 				}
