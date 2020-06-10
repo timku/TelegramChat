@@ -74,47 +74,52 @@ public class Telegram {
 			for (JsonElement ob : up.getAsJsonArray("result")) {
 				if (ob.isJsonObject()) {
 					Update update = gson.fromJson(ob, Update.class);
-		
-					if(lastUpdate == update.getUpdate_id()) return true;
+
+					if (lastUpdate == update.getUpdate_id())
+						return true;
+
 					lastUpdate = update.getUpdate_id();
 
-					if (update.getMessage() != null) {
+					if (update.getMessage() != null && update.getMessage().getFrom() != null
+							&& !update.getMessage().getFrom().isIs_bot()) {
+								
 						Chat chat = update.getMessage().getChat();
-							if (!Main.getBackend().ids.contains(chat.getId()))
-								Main.getBackend().ids.add(chat.getId());
+						if (!Main.getBackend().ids.contains(chat.getId()))
+							Main.getBackend().ids.add(chat.getId());
 
-							if (update.getMessage().getText() != null) {
-								String text = update.getMessage().getText();
-								if (text.length() == 0)
-									return true;
-								if (text.equals("/start")) {
-									if (Main.getBackend().isFirstUse()) {
-										Main.getBackend().setFirstUse(false);
-										ChatMessageToTelegram chat2 = new ChatMessageToTelegram();
-										chat2.chat_id = chat.getId();
-										chat2.parse_mode = "Markdown";
-										chat2.text = Utils.formatMSG("setup-msg")[0];
-										this.sendMsg(chat2);
-									}
-									this.sendMsg(chat.getId(), Utils.formatMSG("can-see-but-not-chat")[0]);
-								} else if (Main.getBackend().getLinkCodes().containsKey(text)) {
-									// LINK
-									Main.link(Main.getBackend().getUUIDFromLinkCode(text), chat.getId());
-									Main.getBackend().removeLinkCode(text);
-								} else if (Main.getBackend().getLinkedChats().containsKey(chat.getId())) {
-									ChatMessageToMc chatMsg = new ChatMessageToMc(
-											Main.getBackend().getUUIDFromChatID(chat.getId()), text, chat.getId());
-									for (TelegramActionListener actionListener : listeners) {
-										actionListener.onSendToMinecraft(chatMsg);
-									}
-									if(!chatMsg.isCancelled()){
-										//Main.sendToMC(chatMsg);
-										Main.sendToMC(update.getMessage().getFrom().getFirst_name().toString(), chatMsg.getContent(), chatMsg.getChatID_sender());
-									}
-								} else {
-									this.sendMsg(chat.getId(), Utils.formatMSG("need-to-link")[0]);
+						if (update.getMessage().getText() != null) {
+							String text = update.getMessage().getText();
+							if (text.length() == 0)
+								return true;
+							if (text.equals("/start")) {
+								if (Main.getBackend().isFirstUse()) {
+									Main.getBackend().setFirstUse(false);
+									ChatMessageToTelegram chat2 = new ChatMessageToTelegram();
+									chat2.chat_id = chat.getId();
+									chat2.parse_mode = "Markdown";
+									chat2.text = Utils.formatMSG("setup-msg")[0];
+									this.sendMsg(chat2);
 								}
+								this.sendMsg(chat.getId(), Utils.formatMSG("can-see-but-not-chat")[0]);
+							} else if (Main.getBackend().getLinkCodes().containsKey(text)) {
+								// LINK
+								Main.link(Main.getBackend().getUUIDFromLinkCode(text), chat.getId());
+								Main.getBackend().removeLinkCode(text);
+							} else if (Main.getBackend().getLinkedChats().containsKey(chat.getId())) {
+								ChatMessageToMc chatMsg = new ChatMessageToMc(
+										Main.getBackend().getUUIDFromChatID(chat.getId()), text, chat.getId());
+								for (TelegramActionListener actionListener : listeners) {
+									actionListener.onSendToMinecraft(chatMsg);
+								}
+								if (!chatMsg.isCancelled()) {
+									// Main.sendToMC(chatMsg);
+									Main.sendToMC(update.getMessage().getFrom().getFirst_name().toString(),
+											chatMsg.getContent(), chatMsg.getChatID_sender());
+								}
+							} else {
+								this.sendMsg(chat.getId(), Utils.formatMSG("need-to-link")[0]);
 							}
+						}
 
 					}
 
@@ -136,8 +141,8 @@ public class Telegram {
 			actionListener.onSendToTelegram(chat);
 		}
 		Gson gson = new Gson();
-		if(!chat.isCancelled()){
-			post("sendMessage", gson.toJson(chat, ChatMessageToTelegram.class));	
+		if (!chat.isCancelled()) {
+			post("sendMessage", gson.toJson(chat, ChatMessageToTelegram.class));
 		}
 	}
 
